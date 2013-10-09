@@ -13,6 +13,7 @@
 (ns degel.muxx.server
   (:require [compojure.core :refer [defroutes GET]]
             [compojure.route :refer [resources not-found]]
+            [ring.adapter.jetty :refer [run-jetty]]
             [ring.util.response :refer [redirect]]
             [shoreleave.middleware.rpc :refer [wrap-rpc]]
             [net.cgrand.enlive-html :as html]
@@ -80,3 +81,12 @@
 
 
 (def app (-> app-routes wrap-rpc site))
+
+(defn run-servers [& {:keys [apps port]}]
+  ;; [TODO] Using an atom for this is kinda grody. Is there some
+  ;;        cleaner way to pass our state down to app-routes?
+  (dorun (map add-app apps))
+  (defonce ^:private server
+    (run-jetty #'app {:port port :join? false}))
+  server)
+
