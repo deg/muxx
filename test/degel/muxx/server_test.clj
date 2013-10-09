@@ -1,6 +1,6 @@
-(ns muxx.core-test
+(ns degel.muxx.server-test
   (:require [clojure.test :refer :all]
-            [muxx.core :refer :all]))
+            [degel.server-test :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
