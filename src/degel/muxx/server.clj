@@ -36,7 +36,7 @@
 
 (defn add-app
   "Add an app to this deployment. Apps are keyed by name."
-  [& {:keys [name base-page production-js dev-js]}]
+  [{:keys [name base-page production-js dev-js] :as app-map}]
   (swap! app-dispatch
          assoc name (->app-data name base-page production-js dev-js)))
 
