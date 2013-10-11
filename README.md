@@ -26,8 +26,13 @@ be foolish to keep a VM instance running 24/7 for each one of them.
 
 ## Usage
 
-The latest version of this project on clojars is:
 ![latest version](https://clojars.org/muxx/latest-version.svg)
+
+In lieu of better docs (coming soon), see my evolving example project
+[my-muxx-sites](https://github.com/deg/my-muxx-sites).
+
+
+### DNS Configuration
 
 Configure your DNS to find all of your apps at the IP of your hosting service.
 
@@ -39,6 +44,8 @@ apps locally and simultaneously:
 * `app2.local.yourdomain.com` is the production version of app2
 * `app2-dev.local.yourdomain.com` is the dev version of app2
 * etc.
+
+### Old stuff (mostly wrong)
 
 Each web app is registered by calling degel.muxx.server/add-app.
 
