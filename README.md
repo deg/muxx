@@ -26,6 +26,9 @@ be foolish to keep a VM instance running 24/7 for each one of them.
 
 ## Usage
 
+The latest version of this project on clojars is:
+![latest version](https://clojars.org/muxx/latest-version.svg)
+
 Configure your DNS to find all of your apps at the IP of your hosting service.
 
 It's also very useful to map "*.local.yourdomain.com" to 127.0.0.1
