@@ -4,6 +4,7 @@
 /.nrepl-port
 /checkouts
 /classes
+/docs
 /target
 pom.xml
 pom.xml.asc
