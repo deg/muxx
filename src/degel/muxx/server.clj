@@ -15,12 +15,11 @@
             [compojure.route :refer [resources not-found]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.util.response :refer [redirect]]
-            [shoreleave.middleware.rpc :refer [wrap-rpc]]
+            [shoreleave.middleware.rpc :as rpc]
             [net.cgrand.enlive-html :as html]
             [compojure.handler :refer [site]]
             [cemerick.austin.repls :as austin-repls]
             [degel.cljutil.devutils :as dev]))
-
 
 ;;; All of the web apps we are handling.
 ;;; Call app-app to add or modify.
@@ -81,7 +80,7 @@
   (not-found "<h1>Muxx moans: 'page not found'.</h1>"))
 
 
-(def app (-> app-routes wrap-rpc site))
+(def app (-> app-routes rpc/wrap-rpc site))
 
 (defn run-servers [& {:keys [apps port]}]
   ;; [TODO] Using an atom for this is kinda grody. Is there some
