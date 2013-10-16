@@ -10,7 +10,7 @@
 ;;; You must not remove this notice, or any other, from this software.
 
 
-(defproject muxx "0.1.1-SNAPSHOT"
+(defproject muxx "0.1.1"
   :description "Deploy multiple production and dev websites on one instance of compojure."
   :url "https://github.com/deg/muxx"
   :license {:name "Eclipse Public License"
@@ -19,7 +19,7 @@
                  [org.clojure/clojure "1.5.1"]
 
                  ;; Degel's Clojure utility library
-                 [degel-clojure-utils "0.1.14-SNAPSHOT"]]
+                 [degel-clojure-utils "0.1.14"]]
 
   :profiles {:dev
              { :plugins [[lein-marginalia "0.7.1"]]}})
