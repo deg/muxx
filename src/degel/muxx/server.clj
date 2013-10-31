@@ -18,6 +18,7 @@
             [shoreleave.middleware.rpc :as rpc]
             [net.cgrand.enlive-html :as html]
             [compojure.handler :refer [site]]
+            [cemerick.austin :as austin]
             [cemerick.austin.repls :as austin-repls]
             [degel.cljutil.devutils :as dev]))
 
@@ -82,7 +83,10 @@
 
 (def app (-> app-routes rpc/wrap-rpc site))
 
-(defn run-servers [& {:keys [apps port]}]
+
+(defn run-servers
+  "Main entry-point. Runn Muxx to multiplex one or more apps"
+  [& {:keys [apps port]}]
   ;; [TODO] Using an atom for this is kinda grody. Is there some
   ;;        cleaner way to pass our state down to app-routes?
   (dorun (map add-app apps))
@@ -90,3 +94,10 @@
     (run-jetty #'app {:port port :join? false}))
   server)
 
+
+(defn run-client-repl
+  "Trampoline a server repl into a client page hosting the clojurescript code.
+   You then need to load or refresh the page."
+  []
+  (let [repl-env (reset! austin-repls/browser-repl-env (austin/repl-env))]
+    (austin-repls/cljs-repl repl-env)))
