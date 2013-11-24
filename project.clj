@@ -10,8 +10,8 @@
 ;;; You must not remove this notice, or any other, from this software.
 
 
-(defproject muxx "0.1.2"
-  :description "Deploy multiple production and dev websites on one instance of compojure."
+(defproject muxx "0.1.3"
+  :description "DEPRECATED: Use degel/muxx. Deploy multiple production and dev websites on one instance of compojure."
   :url "https://github.com/deg/muxx"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
