@@ -4,4 +4,4 @@
 
 git push
 git push kiln
-lein do clean, uberjar, deploy clojars
+lein do clean, compile, deploy clojars
