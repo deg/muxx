@@ -42,6 +42,16 @@
          assoc name (->app-data name base-page production-js dev-js)))
 
 
+(defn default-app-properties
+  "Default app description properties. Apps can override these, but the default
+   values are usually fine."
+  [app-name]
+  {:name app-name
+   :base-page (str "/" app-name ".html")
+   :production-js (str "js/" app-name ".js")
+   :dev-js (str "js/" app-name "-dev.js")})
+
+
 (defn- dev-page
   "Create a development page from the production page. Currently, this
    changes which JavaScript is run (typically to support debugging), and
@@ -91,7 +101,8 @@
   ;;        cleaner way to pass our state down to app-routes?
   (dorun (map add-app apps))
   (defonce ^:private server
-    (run-jetty #'app {:port port :join? false}))
+    (run-jetty #'app {:port (Integer. (or port (System/getenv "PORT") 3000))
+                      :join? false}))
   server)
 
 
