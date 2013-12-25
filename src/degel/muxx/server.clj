@@ -32,14 +32,15 @@
    base-page      ;; base html page, for the production site.
    production-js  ;; JavaScript to load on the production page.
    dev-js         ;; JavaScript to load on the development page.
+   dev-background-image ;; Watermark to  show on dev page
    ])
 
 
 (defn add-app
   "Add an app to this deployment. Apps are keyed by name."
-  [{:keys [name base-page production-js dev-js] :as app-map}]
+  [{:keys [name base-page production-js dev-js dev-background-image] :as app-map}]
   (swap! app-dispatch
-         assoc name (->app-data name base-page production-js dev-js)))
+         assoc name (->app-data name base-page production-js dev-js dev-background-image)))
 
 
 (defn default-app-properties
@@ -49,17 +50,19 @@
   {:name app-name
    :base-page (str "/" app-name ".html")
    :production-js (str "js/" app-name ".js")
-   :dev-js (str "js/" app-name "-dev.js")})
+   :dev-js (str "js/" app-name "-dev.js")
+   :dev-background-image "dev-page.png"})
 
 
 (defn- dev-page
   "Create a development page from the production page. Currently, this
    changes which JavaScript is run (typically to support debugging), and
    injects Austin support for brower-repl access to the page."
-  ([{:keys [base-page production-js dev-js]}]
-     (dev-page (str "public" base-page) production-js dev-js))
-  ([page production-js dev-js]
+  ([{:keys [base-page production-js dev-js dev-background-image]}]
+     (dev-page (str "public" base-page) production-js dev-js dev-background-image))
+  ([page production-js dev-js dev-background-image]
      ((html/template page []
+        [:body] (html/set-attr :background dev-background-image)
         [:body] (html/append (html/html [:script (austin-repls/browser-connected-repl-js)]))
         [[:script (html/attr= :src production-js)]] (html/set-attr :src dev-js)))))
 
