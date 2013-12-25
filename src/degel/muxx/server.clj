@@ -28,10 +28,10 @@
 (def app-dispatch (atom {}))
 
 (defrecord ^:private app-data
-  [name           ;; Name of a website
-   base-page      ;; base html page, for the production site.
-   production-js  ;; JavaScript to load on the production page.
-   dev-js         ;; JavaScript to load on the development page.
+  [name                 ;; Name of a website
+   base-page            ;; base html page, for the production site.
+   production-js        ;; JavaScript to load on the production page.
+   dev-js               ;; JavaScript to load on the development page.
    dev-background-image ;; Watermark to  show on dev page
    ])
 
@@ -47,11 +47,13 @@
   "Default app description properties. Apps can override these, but the default
    values are usually fine."
   [app-name]
-  {:name app-name
-   :base-page (str "/" app-name ".html")
-   :production-js (str "js/" app-name ".js")
-   :dev-js (str "js/" app-name "-dev.js")
-   :dev-background-image "dev-page.png"})
+  (->app-data
+   app-name                       ;; name
+   (str "/" app-name ".html")     ;; base-page
+   (str "js/" app-name ".js")     ;; production-js
+   (str "js/" app-name "-dev.js") ;; dev-js
+   "dev-page.png"                 ;; dev-background-image
+   ))
 
 
 (defn- dev-page
@@ -59,9 +61,7 @@
    changes which JavaScript is run (typically to support debugging), and
    injects Austin support for brower-repl access to the page."
   ([{:keys [base-page production-js dev-js dev-background-image]}]
-     (dev-page (str "public" base-page) production-js dev-js dev-background-image))
-  ([page production-js dev-js dev-background-image]
-     ((html/template page []
+     ((html/template (str "public" base-page) []
         [:body] (html/set-attr :background dev-background-image)
         [:body] (html/append (html/html [:script (austin-repls/browser-connected-repl-js)]))
         [[:script (html/attr= :src production-js)]] (html/set-attr :src dev-js)))))
