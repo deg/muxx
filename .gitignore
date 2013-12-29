@@ -1,11 +1,14 @@
+*#
 *.class
 *.jar
+*~
+/*.repl
 /.lein-*
 /.nrepl-port
 /checkouts
 /classes
 /docs
+/out
 /target
 pom.xml
 pom.xml.asc
-
