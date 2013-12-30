@@ -16,63 +16,76 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.util.response :refer [redirect]]
             [shoreleave.middleware.rpc :as rpc]
-            [net.cgrand.enlive-html :as html]
+            [hiccup.page :as htmlpage]
             [compojure.handler :refer [site]]
             [cemerick.austin :as austin]
             [cemerick.austin.repls :as austin-repls]
             [degel.cljutil.devutils :as dev]))
+
 
 ;;; All of the web apps we are handling.
 ;;; Call app-app to add or modify.
 ;;; [TODO] Do we need an API to remove a website?
 (def app-dispatch (atom {}))
 
-(defrecord ^:private app-data
-  [name                 ;; Name of a website
-   base-page            ;; base html page, for the production site.
-   production-js        ;; JavaScript to load on the production page.
-   dev-js               ;; JavaScript to load on the development page.
-   dev-background-image ;; Watermark to  show on dev page
-   ])
-
 
 (defn add-app
   "Add an app to this deployment. Apps are keyed by name."
-  [{:keys [name base-page production-js dev-js dev-background-image] :as app-map}]
-  (swap! app-dispatch
-         assoc name (->app-data name base-page production-js dev-js dev-background-image)))
+  [{:keys [name                       ;; Name of a website
+           base-page                  ;; base html page, for the production site.
+           production-js-file         ;; JavaScript to load on the production page.
+           production-js-init         ;; Form to launch js on the production page.
+           dev-js-file                ;; JavaScript to load on the development page.
+           dev-js-init                ;; Form to launch js on the dev page.
+           dev-background-image       ;; Watermark to  show on dev page.
+           ] :as app-map}]
+  (swap! app-dispatch assoc name app-map))
 
 
 (defn default-app-properties
   "Default app description properties. Apps can override these, but the default
    values are usually fine."
   [app-name]
-  (->app-data
-   app-name                       ;; name
-   (str "/" app-name ".html")     ;; base-page
-   (str "js/" app-name ".js")     ;; production-js
-   (str "js/" app-name "-dev.js") ;; dev-js
-   "dev-page.png"                 ;; dev-background-image
-   ))
+  {:name                 app-name
+   :css-file             (str "css/" app-name ".css")
+   :production-page      nil ;; was (str "/" app-name ".html")
+   :production-js-file   (str "js/" app-name ".js")
+   :production-js-init   (str "degel." app-name ".client.init()")
+   :dev-page             nil ;; was (str "/" app-name "-dev.html")
+   :dev-js-file          (str "js/" app-name "-dev.js")
+   :dev-js-init          (str "degel." app-name ".client.init()")
+   :dev-background-image "dev-page.png"})
 
 
-(defn- dev-page
-  "Create a development page from the production page. Currently, this
-   changes which JavaScript is run (typically to support debugging), and
-   injects Austin support for brower-repl access to the page."
-  ([{:keys [base-page production-js dev-js dev-background-image]}]
-     ((html/template (str "public" base-page) []
-        [:body] (html/set-attr :background dev-background-image)
-        [:body] (html/append (html/html [:script (austin-repls/browser-connected-repl-js)]))
-        [[:script (html/attr= :src production-js)]] (html/set-attr :src dev-js)))))
+(defn- default-production-page [site]
+  (htmlpage/html5
+   [:head
+    [:meta {:charset "utf-8"}]
+    (htmlpage/include-css (:css-file site))]
+   [:body
+    [:div#page]
+    (htmlpage/include-js (:production-js-file site))
+    [:script (:production-js-init site)]]))
+
+
+(defn- default-dev-page [site]
+  (htmlpage/html5
+   [:head
+    [:meta {:charset "utf-8"}]
+    (htmlpage/include-css (:css-file site))]
+   [:body
+    [:div#page]
+    (htmlpage/include-js (:dev-js-file site))
+    [:script (:dev-js-init site)]
+    [:script (austin-repls/browser-connected-repl-js)]]))
 
 
 (defn- find-site-records
   "Match the server name to choose one of our apps"
   [server-request]
-   (filter (fn [{:keys [name] :as record}]
-             (re-matches (re-pattern (str "(?i).*" name ".*")) server-request))
-           (vals @app-dispatch)))
+  (filter (fn [{:keys [name] :as record}]
+            (re-matches (re-pattern (str "(?i).*" name ".*")) server-request))
+          (vals @app-dispatch)))
 
 
 (defn dev-site?
@@ -85,11 +98,21 @@
 (defroutes app-routes
   (GET "/" {:keys [server-name] :as all-keys}
     (let [[matching-site & extra-matches] (find-site-records server-name)]
-      (cond (nil? matching-site)        (not-found "<h1>Muxx moans: 'app website not found'.</h1>")
-            extra-matches               (not-found "<h1>Muxx moans: 'Ambiguous app website URL'.</h1>")
-            (dev-site? server-name
-                       matching-site)   (dev-page matching-site)
-            true                        (redirect (:base-page matching-site)))))
+      (cond (nil? matching-site)
+            (not-found "<h1>Muxx moans: 'app website not found'.</h1>")
+
+            extra-matches
+            (not-found "<h1>Muxx moans: 'Ambiguous app website URL'.</h1>")
+
+            (dev-site? server-name matching-site)
+            (if (:dev-page matching-site)
+              (redirect (:dev-page matching-site))
+              (default-dev-page matching-site))
+
+            :else
+            (if (:production-page matching-site)
+              (redirect (:production-page matching-site))
+              (default-production-page matching-site)))))
   (resources "/")   ;; to serve static pages saved in resources/public directory
   (not-found "<h1>Muxx moans: 'page not found'.</h1>"))
 
