@@ -10,7 +10,7 @@
 ;;; You must not remove this notice, or any other, from this software.
 
 
-(defproject degel/muxx "0.1.6-SNAPSHOT"
+(defproject degel/muxx "0.1.6"
   :description "Deploy multiple production and dev websites on one instance of compojure."
   :url "https://github.com/deg/muxx"
   :license {:name "Eclipse Public License"
