@@ -18,13 +18,11 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
 
                  ;; Routing library for Ring web application library
-                 [ring/ring-jetty-adapter "1.1.8"]
-                 ;; [TODO] Upgrade to compojure 1.1.6, to try to remove these exclusions:
-                 ;;   both needed because degel-clojure-utils uses midje 1.4.0 which uses newer
-                 [compojure "1.1.5" :exclusions [ring/ring-core org.clojure/tools.macro]]
-                 [shoreleave/shoreleave-remote-ring "0.3.0"]
-                 [shoreleave/shoreleave-remote "0.3.0"]
+                 [ring/ring-jetty-adapter "1.2.1" :exclusions [org.clojure/tools.reader]]
 
+                 [compojure "1.1.6" :exclusions [org.clojure/tools.macro org.clojure/tools.reader]]
+                 [shoreleave/shoreleave-remote-ring "0.3.0" :exclusions [org.clojure/tools.reader]]
+                 [shoreleave/shoreleave-remote "0.3.0" :exclusions [org.clojure/tools.reader]]
 
                  ;; HTML generation
                  [hiccup "1.0.4"]
