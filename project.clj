@@ -10,7 +10,7 @@
 ;;; You must not remove this notice, or any other, from this software.
 
 
-(defproject degel/muxx "0.1.6"
+(defproject degel/muxx "0.1.7"
   :description "Deploy multiple production and dev websites on one instance of compojure."
   :url "https://github.com/deg/muxx"
   :license {:name "Eclipse Public License"
@@ -18,7 +18,8 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
 
                  ;; Routing library for Ring web application library
-                 [ring/ring-jetty-adapter "1.2.1" :exclusions [org.clojure/tools.reader]]
+                 [ring/ring-jetty-adapter "1.2.1"
+                  :exclusions [org.clojure/tools.reader clj-time]]
 
                  [compojure "1.1.6" :exclusions [org.clojure/tools.macro org.clojure/tools.reader]]
                  [shoreleave/shoreleave-remote-ring "0.3.0" :exclusions [org.clojure/tools.reader]]
@@ -27,9 +28,9 @@
                  ;; HTML generation
                  [hiccup "1.0.4"]
 
-                 [degel/degel-clojure-utils "0.1.20"]]
+                 [degel/degel-clojure-utils "0.1.21"]]
   :min-lein-version "2.0.0"
-  ;:pedantic? :abort
+  :pedantic? :abort
   :main degel.muxx.main
   :profiles {:dev
              { :plugins [[lein-marginalia "0.7.1"]
